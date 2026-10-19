@@ -32,7 +32,7 @@ function AuthPage() {
     if (mode === "in") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setBusy(false);
-      if (error) return toast.error("Fel e-post eller lösenord");
+      if (error) { toast.error("Fel e-post eller lösenord"); return; }
       navigate({ to: "/lag" });
     } else {
       const { error } = await supabase.auth.signUp({
@@ -41,14 +41,14 @@ function AuthPage() {
         options: { emailRedirectTo: window.location.origin + "/lag" },
       });
       setBusy(false);
-      if (error) return toast.error(error.message);
+      if (error) { toast.error(error.message); return; }
       toast.success("Kolla din e-post och bekräfta kontot.");
     }
   }
 
   async function google() {
     const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (res.error) return toast.error("Inloggning med Google misslyckades");
+    if (res.error) { toast.error("Inloggning med Google misslyckades"); return; }
     if (res.redirected) return;
     navigate({ to: "/lag" });
   }

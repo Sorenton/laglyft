@@ -39,7 +39,7 @@ function Events() {
       opponent: kind === "match" ? text : null,
       location: location || null,
     });
-    if (error) return toast.error("Kunde inte skapa aktiviteten");
+    if (error) { toast.error("Kunde inte skapa aktiviteten"); return; }
     setText(""); setLocation("");
     qc.invalidateQueries({ queryKey: ["events", teamId] });
   }

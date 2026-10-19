@@ -38,7 +38,7 @@ function EventPage() {
 
   async function setStatus(pid: string, status: string) {
     const { error } = await supabase.from("attendance").upsert({ event_id: eventId, player_id: pid, status });
-    if (error) return toast.error("Kunde inte spara närvaro");
+    if (error) { toast.error("Kunde inte spara närvaro"); return; }
     refresh();
   }
 
@@ -146,7 +146,7 @@ function GoalForm({ eventId, players, presentIds, onSaved }: { eventId: string; 
       })
       .select("id")
       .single();
-    if (error || !data) return toast.error("Kunde inte spara målet");
+    if (error || !data) { toast.error("Kunde inte spara målet"); return; }
     if (court.size) {
       const { error: e2 } = await supabase.from("goal_on_court").insert([...court].map((player_id) => ({ goal_id: data.id, player_id })));
       if (e2) toast.error("Kunde inte spara vilka som var på plan");

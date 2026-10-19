@@ -36,7 +36,7 @@ function Players() {
       number: number ? Number(number) : null,
       position: position || null,
     });
-    if (error) return toast.error("Kunde inte lägga till spelaren");
+    if (error) { toast.error("Kunde inte lägga till spelaren"); return; }
     setName(""); setNumber(""); setPosition("");
     refresh();
   }
@@ -44,7 +44,7 @@ function Players() {
   async function remove(id: string) {
     if (!confirm("Ta bort spelaren? All statistik för spelaren försvinner.")) return;
     const { error } = await supabase.from("players").delete().eq("id", id);
-    if (error) return toast.error("Kunde inte ta bort");
+    if (error) { toast.error("Kunde inte ta bort"); return; }
     refresh();
   }
 

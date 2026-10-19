@@ -25,8 +25,7 @@ function Overview() {
   const ga = goals.length - gf;
   const rate = attendanceRate(events.flatMap((e) => e.attendance.map((a) => a.status)));
   const top = [...players]
-    .map((p) => ({ p, s: stats[p.id] }))
-    .filter((x) => x.s)
+    .flatMap((p) => { const s = stats[p.id]; return s ? [{ p, s }] : []; })
     .sort((a, b) => b.s.points - a.s.points)
     .slice(0, 5);
   const now = Date.now();

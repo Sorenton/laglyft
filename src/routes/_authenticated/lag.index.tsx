@@ -29,7 +29,7 @@ function TeamsPage() {
   async function create(e: React.FormEvent) {
     e.preventDefault();
     const { error } = await supabase.from("teams").insert({ name, club });
-    if (error) return toast.error("Kunde inte skapa laget");
+    if (error) { toast.error("Kunde inte skapa laget"); return; }
     toast.success("Laget är skapat");
     qc.invalidateQueries({ queryKey: ["teams"] });
   }
