@@ -10,33 +10,119 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedLagIndexRouteImport } from './routes/_authenticated/lag.index'
+import { Route as AuthenticatedLagTeamIdRouteImport } from './routes/_authenticated/lag.$teamId'
+import { Route as AuthenticatedLagTeamIdIndexRouteImport } from './routes/_authenticated/lag.$teamId.index'
+import { Route as AuthenticatedLagTeamIdSpelareRouteImport } from './routes/_authenticated/lag.$teamId.spelare'
+import { Route as AuthenticatedLagTeamIdAktiviteterIndexRouteImport } from './routes/_authenticated/lag.$teamId.aktiviteter.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedLagIndexRoute = AuthenticatedLagIndexRouteImport.update({
+  id: '/lag/',
+  path: '/lag/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLagTeamIdRoute = AuthenticatedLagTeamIdRouteImport.update({
+  id: '/lag/$teamId',
+  path: '/lag/$teamId',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLagTeamIdIndexRoute =
+  AuthenticatedLagTeamIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedLagTeamIdRoute,
+  } as any)
+const AuthenticatedLagTeamIdSpelareRoute =
+  AuthenticatedLagTeamIdSpelareRouteImport.update({
+    id: '/spelare',
+    path: '/spelare',
+    getParentRoute: () => AuthenticatedLagTeamIdRoute,
+  } as any)
+const AuthenticatedLagTeamIdAktiviteterIndexRoute =
+  AuthenticatedLagTeamIdAktiviteterIndexRouteImport.update({
+    id: '/aktiviteter/',
+    path: '/aktiviteter/',
+    getParentRoute: () => AuthenticatedLagTeamIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/lag/$teamId': typeof AuthenticatedLagTeamIdRouteWithChildren
+  '/lag/': typeof AuthenticatedLagIndexRoute
+  '/lag/$teamId/spelare': typeof AuthenticatedLagTeamIdSpelareRoute
+  '/lag/$teamId/': typeof AuthenticatedLagTeamIdIndexRoute
+  '/lag/$teamId/aktiviteter/': typeof AuthenticatedLagTeamIdAktiviteterIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/lag': typeof AuthenticatedLagIndexRoute
+  '/lag/$teamId/spelare': typeof AuthenticatedLagTeamIdSpelareRoute
+  '/lag/$teamId': typeof AuthenticatedLagTeamIdIndexRoute
+  '/lag/$teamId/aktiviteter': typeof AuthenticatedLagTeamIdAktiviteterIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/lag/$teamId': typeof AuthenticatedLagTeamIdRouteWithChildren
+  '/_authenticated/lag/': typeof AuthenticatedLagIndexRoute
+  '/_authenticated/lag/$teamId/spelare': typeof AuthenticatedLagTeamIdSpelareRoute
+  '/_authenticated/lag/$teamId/': typeof AuthenticatedLagTeamIdIndexRoute
+  '/_authenticated/lag/$teamId/aktiviteter/': typeof AuthenticatedLagTeamIdAktiviteterIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/lag/$teamId'
+    | '/lag/'
+    | '/lag/$teamId/spelare'
+    | '/lag/$teamId/'
+    | '/lag/$teamId/aktiviteter/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/lag'
+    | '/lag/$teamId/spelare'
+    | '/lag/$teamId'
+    | '/lag/$teamId/aktiviteter'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/lag/$teamId'
+    | '/_authenticated/lag/'
+    | '/_authenticated/lag/$teamId/spelare'
+    | '/_authenticated/lag/$teamId/'
+    | '/_authenticated/lag/$teamId/aktiviteter/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +134,94 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/lag/': {
+      id: '/_authenticated/lag/'
+      path: '/lag'
+      fullPath: '/lag/'
+      preLoaderRoute: typeof AuthenticatedLagIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/lag/$teamId': {
+      id: '/_authenticated/lag/$teamId'
+      path: '/lag/$teamId'
+      fullPath: '/lag/$teamId'
+      preLoaderRoute: typeof AuthenticatedLagTeamIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/lag/$teamId/': {
+      id: '/_authenticated/lag/$teamId/'
+      path: '/'
+      fullPath: '/lag/$teamId/'
+      preLoaderRoute: typeof AuthenticatedLagTeamIdIndexRouteImport
+      parentRoute: typeof AuthenticatedLagTeamIdRoute
+    }
+    '/_authenticated/lag/$teamId/spelare': {
+      id: '/_authenticated/lag/$teamId/spelare'
+      path: '/spelare'
+      fullPath: '/lag/$teamId/spelare'
+      preLoaderRoute: typeof AuthenticatedLagTeamIdSpelareRouteImport
+      parentRoute: typeof AuthenticatedLagTeamIdRoute
+    }
+    '/_authenticated/lag/$teamId/aktiviteter/': {
+      id: '/_authenticated/lag/$teamId/aktiviteter/'
+      path: '/aktiviteter'
+      fullPath: '/lag/$teamId/aktiviteter/'
+      preLoaderRoute: typeof AuthenticatedLagTeamIdAktiviteterIndexRouteImport
+      parentRoute: typeof AuthenticatedLagTeamIdRoute
+    }
   }
 }
 
+interface AuthenticatedLagTeamIdRouteChildren {
+  AuthenticatedLagTeamIdSpelareRoute: typeof AuthenticatedLagTeamIdSpelareRoute
+  AuthenticatedLagTeamIdIndexRoute: typeof AuthenticatedLagTeamIdIndexRoute
+  AuthenticatedLagTeamIdAktiviteterIndexRoute: typeof AuthenticatedLagTeamIdAktiviteterIndexRoute
+}
+
+const AuthenticatedLagTeamIdRouteChildren: AuthenticatedLagTeamIdRouteChildren =
+  {
+    AuthenticatedLagTeamIdSpelareRoute: AuthenticatedLagTeamIdSpelareRoute,
+    AuthenticatedLagTeamIdIndexRoute: AuthenticatedLagTeamIdIndexRoute,
+    AuthenticatedLagTeamIdAktiviteterIndexRoute:
+      AuthenticatedLagTeamIdAktiviteterIndexRoute,
+  }
+
+const AuthenticatedLagTeamIdRouteWithChildren =
+  AuthenticatedLagTeamIdRoute._addFileChildren(
+    AuthenticatedLagTeamIdRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedLagTeamIdRoute: typeof AuthenticatedLagTeamIdRouteWithChildren
+  AuthenticatedLagIndexRoute: typeof AuthenticatedLagIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedLagTeamIdRoute: AuthenticatedLagTeamIdRouteWithChildren,
+  AuthenticatedLagIndexRoute: AuthenticatedLagIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
