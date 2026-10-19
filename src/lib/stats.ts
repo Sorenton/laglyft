@@ -41,7 +41,9 @@ export function computePlayerStats(goals: GoalRow[]): Record<string, PlayerStat>
   return out;
 }
 
-export function attendanceRate(statuses: string[]): number {
+/** "not_called" (Ej kallad) does not count toward attendance at all. */
+export function attendanceRate(all: string[]): number {
+  const statuses = all.filter((s) => s !== "not_called");
   if (statuses.length === 0) return 0;
   return Math.round((statuses.filter((s) => s === "present").length / statuses.length) * 100);
 }

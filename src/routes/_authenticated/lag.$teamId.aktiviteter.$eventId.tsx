@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/lag/$teamId/aktiviteter/$e
   component: EventPage,
 });
 
-const STATUSES = ["present", "absent", "sick", "injured"] as const;
+const STATUSES = ["present", "absent", "sick", "injured", "not_called"] as const;
 
 function EventPage() {
   const { teamId, eventId } = Route.useParams();
