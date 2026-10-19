@@ -20,3 +20,9 @@ describe("attendance", () => {
     expect(attendanceRate(["present", "absent", "present", "sick"])).toBe(50);
   });
 });
+
+describe("attendanceRate not_called", () => {
+  it("ignores Ej kallad", () => {
+    expect(attendanceRate(["present", "absent", "not_called", "not_called"])).toBe(50);
+  });
+});

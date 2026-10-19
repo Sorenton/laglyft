@@ -88,4 +88,5 @@ export const STATUS_LABEL: Record<string, string> = {
   absent: "Frånvarande",
   sick: "Sjuk",
   injured: "Skadad",
+  not_called: "Ej kallad",
 };
