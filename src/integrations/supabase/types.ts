@@ -14,13 +14,261 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      attendance: {
+        Row: {
+          event_id: string
+          player_id: string
+          status: string
+        }
+        Insert: {
+          event_id: string
+          player_id: string
+          status: string
+        }
+        Update: {
+          event_id?: string
+          player_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          location: string | null
+          opponent: string | null
+          starts_at: string
+          team_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string
+          location?: string | null
+          opponent?: string | null
+          starts_at: string
+          team_id: string
+          title?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          location?: string | null
+          opponent?: string | null
+          starts_at?: string
+          team_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goal_on_court: {
+        Row: {
+          goal_id: string
+          player_id: string
+        }
+        Insert: {
+          goal_id: string
+          player_id: string
+        }
+        Update: {
+          goal_id?: string
+          player_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goal_on_court_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goal_on_court_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goals: {
+        Row: {
+          assist_id: string | null
+          created_at: string
+          event_id: string
+          for_us: boolean
+          game_time: string | null
+          id: string
+          period: number | null
+          scorer_id: string | null
+        }
+        Insert: {
+          assist_id?: string | null
+          created_at?: string
+          event_id: string
+          for_us: boolean
+          game_time?: string | null
+          id?: string
+          period?: number | null
+          scorer_id?: string | null
+        }
+        Update: {
+          assist_id?: string | null
+          created_at?: string
+          event_id?: string
+          for_us?: boolean
+          game_time?: string | null
+          id?: string
+          period?: number | null
+          scorer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_assist_id_fkey"
+            columns: ["assist_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goals_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goals_scorer_id_fkey"
+            columns: ["scorer_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      players: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          number: number | null
+          position: string | null
+          team_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          number?: number | null
+          position?: string | null
+          team_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          number?: number | null
+          position?: string | null
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "players_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_members: {
+        Row: {
+          role: string
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          role?: string
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          role?: string
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          club: string
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+        }
+        Insert: {
+          club?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          club?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      event_team: { Args: { _event: string }; Returns: string }
+      goal_team: { Args: { _goal: string }; Returns: string }
+      is_team_member: { Args: { _team: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
