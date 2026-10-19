@@ -16,7 +16,9 @@ import { Route as AuthenticatedLagIndexRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedLagTeamIdRouteImport } from './routes/_authenticated/lag.$teamId'
 import { Route as AuthenticatedLagTeamIdIndexRouteImport } from './routes/_authenticated/lag.$teamId.index'
 import { Route as AuthenticatedLagTeamIdSpelareRouteImport } from './routes/_authenticated/lag.$teamId.spelare'
+import { Route as AuthenticatedLagTeamIdStatistikRouteImport } from './routes/_authenticated/lag.$teamId.statistik'
 import { Route as AuthenticatedLagTeamIdAktiviteterIndexRouteImport } from './routes/_authenticated/lag.$teamId.aktiviteter.index'
+import { Route as AuthenticatedLagTeamIdAktiviteterEventIdRouteImport } from './routes/_authenticated/lag.$teamId.aktiviteter.$eventId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -54,10 +56,22 @@ const AuthenticatedLagTeamIdSpelareRoute =
     path: '/spelare',
     getParentRoute: () => AuthenticatedLagTeamIdRoute,
   } as any)
+const AuthenticatedLagTeamIdStatistikRoute =
+  AuthenticatedLagTeamIdStatistikRouteImport.update({
+    id: '/statistik',
+    path: '/statistik',
+    getParentRoute: () => AuthenticatedLagTeamIdRoute,
+  } as any)
 const AuthenticatedLagTeamIdAktiviteterIndexRoute =
   AuthenticatedLagTeamIdAktiviteterIndexRouteImport.update({
     id: '/aktiviteter/',
     path: '/aktiviteter/',
+    getParentRoute: () => AuthenticatedLagTeamIdRoute,
+  } as any)
+const AuthenticatedLagTeamIdAktiviteterEventIdRoute =
+  AuthenticatedLagTeamIdAktiviteterEventIdRouteImport.update({
+    id: '/aktiviteter/$eventId',
+    path: '/aktiviteter/$eventId',
     getParentRoute: () => AuthenticatedLagTeamIdRoute,
   } as any)
 
@@ -67,7 +81,9 @@ export interface FileRoutesByFullPath {
   '/lag/$teamId': typeof AuthenticatedLagTeamIdRouteWithChildren
   '/lag/': typeof AuthenticatedLagIndexRoute
   '/lag/$teamId/spelare': typeof AuthenticatedLagTeamIdSpelareRoute
+  '/lag/$teamId/statistik': typeof AuthenticatedLagTeamIdStatistikRoute
   '/lag/$teamId/': typeof AuthenticatedLagTeamIdIndexRoute
+  '/lag/$teamId/aktiviteter/$eventId': typeof AuthenticatedLagTeamIdAktiviteterEventIdRoute
   '/lag/$teamId/aktiviteter/': typeof AuthenticatedLagTeamIdAktiviteterIndexRoute
 }
 export interface FileRoutesByTo {
@@ -75,7 +91,9 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/lag': typeof AuthenticatedLagIndexRoute
   '/lag/$teamId/spelare': typeof AuthenticatedLagTeamIdSpelareRoute
+  '/lag/$teamId/statistik': typeof AuthenticatedLagTeamIdStatistikRoute
   '/lag/$teamId': typeof AuthenticatedLagTeamIdIndexRoute
+  '/lag/$teamId/aktiviteter/$eventId': typeof AuthenticatedLagTeamIdAktiviteterEventIdRoute
   '/lag/$teamId/aktiviteter': typeof AuthenticatedLagTeamIdAktiviteterIndexRoute
 }
 export interface FileRoutesById {
@@ -86,7 +104,9 @@ export interface FileRoutesById {
   '/_authenticated/lag/$teamId': typeof AuthenticatedLagTeamIdRouteWithChildren
   '/_authenticated/lag/': typeof AuthenticatedLagIndexRoute
   '/_authenticated/lag/$teamId/spelare': typeof AuthenticatedLagTeamIdSpelareRoute
+  '/_authenticated/lag/$teamId/statistik': typeof AuthenticatedLagTeamIdStatistikRoute
   '/_authenticated/lag/$teamId/': typeof AuthenticatedLagTeamIdIndexRoute
+  '/_authenticated/lag/$teamId/aktiviteter/$eventId': typeof AuthenticatedLagTeamIdAktiviteterEventIdRoute
   '/_authenticated/lag/$teamId/aktiviteter/': typeof AuthenticatedLagTeamIdAktiviteterIndexRoute
 }
 export interface FileRouteTypes {
@@ -97,7 +117,9 @@ export interface FileRouteTypes {
     | '/lag/$teamId'
     | '/lag/'
     | '/lag/$teamId/spelare'
+    | '/lag/$teamId/statistik'
     | '/lag/$teamId/'
+    | '/lag/$teamId/aktiviteter/$eventId'
     | '/lag/$teamId/aktiviteter/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -105,7 +127,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/lag'
     | '/lag/$teamId/spelare'
+    | '/lag/$teamId/statistik'
     | '/lag/$teamId'
+    | '/lag/$teamId/aktiviteter/$eventId'
     | '/lag/$teamId/aktiviteter'
   id:
     | '__root__'
@@ -115,7 +139,9 @@ export interface FileRouteTypes {
     | '/_authenticated/lag/$teamId'
     | '/_authenticated/lag/'
     | '/_authenticated/lag/$teamId/spelare'
+    | '/_authenticated/lag/$teamId/statistik'
     | '/_authenticated/lag/$teamId/'
+    | '/_authenticated/lag/$teamId/aktiviteter/$eventId'
     | '/_authenticated/lag/$teamId/aktiviteter/'
   fileRoutesById: FileRoutesById
 }
@@ -176,6 +202,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLagTeamIdSpelareRouteImport
       parentRoute: typeof AuthenticatedLagTeamIdRoute
     }
+    '/_authenticated/lag/$teamId/statistik': {
+      id: '/_authenticated/lag/$teamId/statistik'
+      path: '/statistik'
+      fullPath: '/lag/$teamId/statistik'
+      preLoaderRoute: typeof AuthenticatedLagTeamIdStatistikRouteImport
+      parentRoute: typeof AuthenticatedLagTeamIdRoute
+    }
     '/_authenticated/lag/$teamId/aktiviteter/': {
       id: '/_authenticated/lag/$teamId/aktiviteter/'
       path: '/aktiviteter'
@@ -183,19 +216,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLagTeamIdAktiviteterIndexRouteImport
       parentRoute: typeof AuthenticatedLagTeamIdRoute
     }
+    '/_authenticated/lag/$teamId/aktiviteter/$eventId': {
+      id: '/_authenticated/lag/$teamId/aktiviteter/$eventId'
+      path: '/aktiviteter/$eventId'
+      fullPath: '/lag/$teamId/aktiviteter/$eventId'
+      preLoaderRoute: typeof AuthenticatedLagTeamIdAktiviteterEventIdRouteImport
+      parentRoute: typeof AuthenticatedLagTeamIdRoute
+    }
   }
 }
 
 interface AuthenticatedLagTeamIdRouteChildren {
   AuthenticatedLagTeamIdSpelareRoute: typeof AuthenticatedLagTeamIdSpelareRoute
+  AuthenticatedLagTeamIdStatistikRoute: typeof AuthenticatedLagTeamIdStatistikRoute
   AuthenticatedLagTeamIdIndexRoute: typeof AuthenticatedLagTeamIdIndexRoute
+  AuthenticatedLagTeamIdAktiviteterEventIdRoute: typeof AuthenticatedLagTeamIdAktiviteterEventIdRoute
   AuthenticatedLagTeamIdAktiviteterIndexRoute: typeof AuthenticatedLagTeamIdAktiviteterIndexRoute
 }
 
 const AuthenticatedLagTeamIdRouteChildren: AuthenticatedLagTeamIdRouteChildren =
   {
     AuthenticatedLagTeamIdSpelareRoute: AuthenticatedLagTeamIdSpelareRoute,
+    AuthenticatedLagTeamIdStatistikRoute: AuthenticatedLagTeamIdStatistikRoute,
     AuthenticatedLagTeamIdIndexRoute: AuthenticatedLagTeamIdIndexRoute,
+    AuthenticatedLagTeamIdAktiviteterEventIdRoute:
+      AuthenticatedLagTeamIdAktiviteterEventIdRoute,
     AuthenticatedLagTeamIdAktiviteterIndexRoute:
       AuthenticatedLagTeamIdAktiviteterIndexRoute,
   }
