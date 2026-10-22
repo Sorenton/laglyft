@@ -15,6 +15,13 @@
       "when": 1792429002010,
       "tag": "0001_attendance_not_called",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792667964234,
+      "tag": "0002_match_import",
+      "breakpoints": true
     }
   ]
 }

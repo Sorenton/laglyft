@@ -50,6 +50,7 @@ export type Database = {
       events: {
         Row: {
           created_at: string
+          external_match_id: number | null
           id: string
           kind: string
           location: string | null
@@ -60,6 +61,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          external_match_id?: number | null
           id?: string
           kind?: string
           location?: string | null
@@ -70,6 +72,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          external_match_id?: number | null
           id?: string
           kind?: string
           location?: string | null
@@ -123,7 +126,9 @@ export type Database = {
           assist_id: string | null
           created_at: string
           event_id: string
+          external_id: number | null
           for_us: boolean
+          game_situation: string
           game_time: string | null
           id: string
           period: number | null
@@ -133,7 +138,9 @@ export type Database = {
           assist_id?: string | null
           created_at?: string
           event_id: string
+          external_id?: number | null
           for_us: boolean
+          game_situation?: string
           game_time?: string | null
           id?: string
           period?: number | null
@@ -143,7 +150,9 @@ export type Database = {
           assist_id?: string | null
           created_at?: string
           event_id?: string
+          external_id?: number | null
           for_us?: boolean
+          game_situation?: string
           game_time?: string | null
           id?: string
           period?: number | null
@@ -167,6 +176,69 @@ export type Database = {
           {
             foreignKeyName: "goals_scorer_id_fkey"
             columns: ["scorer_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      penalties: {
+        Row: {
+          code: string | null
+          created_at: string
+          event_id: string
+          external_id: number | null
+          for_us: boolean
+          game_time: string | null
+          id: string
+          minutes: number
+          period: number | null
+          player_id: string | null
+          player_name: string | null
+          reason: string | null
+          shirt_no: number | null
+        }
+        Insert: {
+          code?: string | null
+          created_at?: string
+          event_id: string
+          external_id?: number | null
+          for_us: boolean
+          game_time?: string | null
+          id?: string
+          minutes?: number
+          period?: number | null
+          player_id?: string | null
+          player_name?: string | null
+          reason?: string | null
+          shirt_no?: number | null
+        }
+        Update: {
+          code?: string | null
+          created_at?: string
+          event_id?: string
+          external_id?: number | null
+          for_us?: boolean
+          game_time?: string | null
+          id?: string
+          minutes?: number
+          period?: number | null
+          player_id?: string | null
+          player_name?: string | null
+          reason?: string | null
+          shirt_no?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "penalties_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "penalties_player_id_fkey"
+            columns: ["player_id"]
             isOneToOne: false
             referencedRelation: "players"
             referencedColumns: ["id"]

@@ -3,7 +3,9 @@ import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { eventQuery, playersQuery, STATUS_LABEL } from "@/lib/queries";
+import { eventQuery, playersQuery, teamQuery, STATUS_LABEL } from "@/lib/queries";
+import { ProtocolImport } from "@/components/ProtocolImport";
+import { SITUATION_LABEL, type GameSituation } from "@/lib/gameSituation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -26,12 +28,14 @@ function EventPage() {
   const { teamId, eventId } = Route.useParams();
   const { data: ev } = useSuspenseQuery(eventQuery(eventId));
   const { data: players } = useSuspenseQuery(playersQuery(teamId));
+  const { data: team } = useSuspenseQuery(teamQuery(teamId));
   const qc = useQueryClient();
   const navigate = useNavigate();
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["event", eventId] });
     qc.invalidateQueries({ queryKey: ["events", teamId] });
     qc.invalidateQueries({ queryKey: ["teamGoals", teamId] });
+    qc.invalidateQueries({ queryKey: ["players", teamId] });
   };
   const statusOf = (pid: string) => ev.attendance.find((a) => a.player_id === pid)?.status;
   const nameOf = (pid: string | null) => players.find((p) => p.id === pid)?.name ?? "–";
@@ -64,7 +68,22 @@ function EventPage() {
             {ev.location ? ` · ${ev.location}` : ""}
           </p>
         </div>
-        {isMatch && <div className="stat-num text-7xl">{gf}–{ga}</div>}
+        {isMatch && (
+          <div className="flex flex-col items-end gap-3">
+            <div className="stat-num text-7xl">{gf}–{ga}</div>
+            <ProtocolImport
+              eventId={eventId}
+              teamId={teamId}
+              teamName={team.name}
+              club={team.club}
+              players={players}
+              existingGoalIds={ev.goals.map((g) => g.external_id).filter((x): x is number => x != null)}
+              existingPenaltyIds={ev.penalties.map((x) => x.external_id).filter((x): x is number => x != null)}
+              existingAttendance={ev.attendance.map((a) => a.player_id)}
+              onDone={refresh}
+            />
+          </div>
+        )}
       </div>
 
       <section>
@@ -99,6 +118,9 @@ function EventPage() {
               <div key={g.id} className="flex flex-wrap items-center gap-3 p-4">
                 <span className={cn("stat-num w-20 text-xl", g.for_us ? "text-success" : "text-destructive")}>{g.for_us ? "Gjort" : "Insläppt"}</span>
                 <span className="text-sm text-muted-foreground">P{g.period ?? "?"} {g.game_time}</span>
+                {g.game_situation !== "full_strength" && (
+                  <span className="rounded border px-1.5 text-xs font-bold">{SITUATION_LABEL[g.game_situation as GameSituation]}</span>
+                )}
                 <span className="flex-1">
                   {g.for_us ? <>{nameOf(g.scorer_id)}{g.assist_id && <span className="text-muted-foreground"> (ass. {nameOf(g.assist_id)})</span>}</> : null}
                   <span className="block text-xs text-muted-foreground">På plan: {g.goal_on_court.map((x) => nameOf(x.player_id)).join(", ") || "–"}</span>
@@ -107,6 +129,24 @@ function EventPage() {
               </div>
             ))}
             {ev.goals.length === 0 && <p className="p-4 text-sm text-muted-foreground">Inga mål registrerade.</p>}
+          </div>
+        </section>
+      )}
+
+      {isMatch && (
+        <section>
+          <h3 className="text-3xl">Utvisningar</h3>
+          <div className="mt-4 divide-y rounded-md border bg-card">
+            {ev.penalties.map((x) => (
+              <div key={x.id} className="flex flex-wrap items-center gap-3 p-4 text-sm">
+                <span className="w-20 font-semibold">{x.for_us ? "Vi" : "Motst."}</span>
+                <span className="text-muted-foreground">P{x.period ?? "?"} {x.game_time}</span>
+                <span className="flex-1">{x.player_id ? nameOf(x.player_id) : x.player_name ?? "–"}</span>
+                <span>{x.minutes} min · {x.reason}</span>
+                <Button size="sm" variant="ghost" onClick={async () => { await supabase.from("penalties").delete().eq("id", x.id); refresh(); }}>Ta bort</Button>
+              </div>
+            ))}
+            {ev.penalties.length === 0 && <p className="p-4 text-sm text-muted-foreground">Inga utvisningar registrerade.</p>}
           </div>
         </section>
       )}
@@ -125,6 +165,7 @@ function GoalForm({ eventId, players, presentIds, onSaved }: { eventId: string; 
   const [period, setPeriod] = useState("1");
   const [time, setTime] = useState("");
   const [onCourt, setOnCourt] = useState<string[]>([]);
+  const [situation, setSituation] = useState<GameSituation>("full_strength");
   const roster = presentIds.length ? players.filter((p) => presentIds.includes(p.id)) : players;
 
   const toggle = (id: string) => setOnCourt((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]));
@@ -143,6 +184,7 @@ function GoalForm({ eventId, players, presentIds, onSaved }: { eventId: string; 
         assist_id: forUs && assist ? assist : null,
         period: Number(period),
         game_time: time || null,
+        game_situation: situation,
       })
       .select("id")
       .single();
@@ -179,6 +221,9 @@ function GoalForm({ eventId, players, presentIds, onSaved }: { eventId: string; 
         )}
         <select className={select} value={period} onChange={(e) => setPeriod(e.target.value)} aria-label="Period">
           <option value="1">Period 1</option><option value="2">Period 2</option><option value="3">Period 3</option><option value="4">Förlängning</option>
+        </select>
+        <select className={select} value={situation} onChange={(e) => setSituation(e.target.value as GameSituation)} aria-label="Spelform">
+          {(Object.keys(SITUATION_LABEL) as GameSituation[]).map((k) => <option key={k} value={k}>{SITUATION_LABEL[k]}</option>)}
         </select>
         <Input className="w-28" placeholder="Tid 12:34" value={time} onChange={(e) => setTime(e.target.value)} />
       </div>
