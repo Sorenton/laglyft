@@ -56,7 +56,7 @@ export const eventQuery = (eventId: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("events")
-        .select("*, attendance(player_id, status), goals(*, goal_on_court(player_id))")
+        .select("*, attendance(player_id, status), goals(*, goal_on_court(player_id)), penalties(*)")
         .eq("id", eventId)
         .single();
       if (error) throw error;
