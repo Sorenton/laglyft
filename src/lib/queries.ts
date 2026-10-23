@@ -42,7 +42,7 @@ export const eventsQuery = (teamId: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("events")
-        .select("*, attendance(player_id, status), goals(id, for_us)")
+        .select("*, attendance(player_id, status), goals(id, for_us), player_match_stats(player_id, shots, shots_blocked, blocks, saves)")
         .eq("team_id", teamId)
         .order("starts_at", { ascending: false });
       if (error) throw error;
@@ -56,7 +56,7 @@ export const eventQuery = (eventId: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("events")
-        .select("*, attendance(player_id, status), goals(*, goal_on_court(player_id)), penalties(*)")
+        .select("*, attendance(player_id, status), goals(*, goal_on_court(player_id)), penalties(*), match_lines(*), player_match_stats(*)")
         .eq("id", eventId)
         .single();
       if (error) throw error;

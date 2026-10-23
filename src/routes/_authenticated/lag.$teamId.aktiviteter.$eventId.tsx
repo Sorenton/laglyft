@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { eventQuery, playersQuery, teamQuery, STATUS_LABEL } from "@/lib/queries";
 import { ProtocolImport } from "@/components/ProtocolImport";
+import { GoalEditor, LinesSection, MatchCoach } from "@/components/MatchTools";
 import { SITUATION_LABEL, type GameSituation } from "@/lib/gameSituation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,7 @@ function EventPage() {
   const { data: players } = useSuspenseQuery(playersQuery(teamId));
   const { data: team } = useSuspenseQuery(teamQuery(teamId));
   const qc = useQueryClient();
+  const [editingGoal, setEditingGoal] = useState<string | null>(null);
   const navigate = useNavigate();
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["event", eventId] });
@@ -56,6 +58,9 @@ function EventPage() {
   const gf = ev.goals.filter((g) => g.for_us).length;
   const ga = ev.goals.length - gf;
   const isMatch = ev.kind === "match";
+  const presentIds = ev.attendance.filter((a) => a.status === "present").map((a) => a.player_id);
+  const roster = presentIds.length ? players.filter((p) => presentIds.includes(p.id)) : players;
+  const lines = [...ev.match_lines].sort((a, b) => a.sort - b.sort);
 
   return (
     <div className="space-y-10">
@@ -110,9 +115,13 @@ function EventPage() {
       </section>
 
       {isMatch && (
+        <LinesSection eventId={eventId} roster={roster} lines={lines} onChange={refresh} />
+      )}
+
+      {isMatch && (
         <section>
           <h3 className="text-3xl">Mål</h3>
-          <GoalForm eventId={eventId} players={players} presentIds={ev.attendance.filter((a) => a.status === "present").map((a) => a.player_id)} onSaved={refresh} />
+          <GoalForm eventId={eventId} players={players} presentIds={presentIds} onSaved={refresh} />
           <div className="mt-4 divide-y rounded-md border bg-card">
             {ev.goals.map((g) => (
               <div key={g.id} className="flex flex-wrap items-center gap-3 p-4">
@@ -125,12 +134,20 @@ function EventPage() {
                   {g.for_us ? <>{nameOf(g.scorer_id)}{g.assist_id && <span className="text-muted-foreground"> (ass. {nameOf(g.assist_id)})</span>}</> : null}
                   <span className="block text-xs text-muted-foreground">På plan: {g.goal_on_court.map((x) => nameOf(x.player_id)).join(", ") || "–"}</span>
                 </span>
+                <Button size="sm" variant="outline" onClick={() => setEditingGoal(editingGoal === g.id ? null : g.id)}>Redigera (+/−)</Button>
                 <Button size="sm" variant="ghost" onClick={async () => { await supabase.from("goals").delete().eq("id", g.id); refresh(); }}>Ta bort</Button>
+                {editingGoal === g.id && (
+                  <GoalEditor goal={g} roster={roster} lines={lines} onDone={() => { setEditingGoal(null); refresh(); }} />
+                )}
               </div>
             ))}
             {ev.goals.length === 0 && <p className="p-4 text-sm text-muted-foreground">Inga mål registrerade.</p>}
           </div>
         </section>
+      )}
+
+      {isMatch && (
+        <MatchCoach key={eventId} eventId={eventId} roster={roster} stats={ev.player_match_stats} onChange={() => qc.invalidateQueries({ queryKey: ["events", teamId] })} />
       )}
 
       {isMatch && (
