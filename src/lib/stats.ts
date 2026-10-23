@@ -47,3 +47,28 @@ export function attendanceRate(all: string[]): number {
   if (statuses.length === 0) return 0;
   return Math.round((statuses.filter((s) => s === "present").length / statuses.length) * 100);
 }
+
+export type AttendanceEntry = { kind: string; status: string };
+export type AttendanceSummary = {
+  trainings: { present: number; called: number };
+  matches: { present: number; called: number };
+  rate: number;
+};
+
+/**
+ * A player is "called" for an event when they have any status except
+ * not_called. Rate = present / called over trainings + matches.
+ */
+export function attendanceSummary(entries: AttendanceEntry[]): AttendanceSummary {
+  const trainings = { present: 0, called: 0 };
+  const matches = { present: 0, called: 0 };
+  for (const e of entries) {
+    if (e.status === "not_called") continue;
+    const bucket = e.kind === "match" ? matches : trainings;
+    bucket.called++;
+    if (e.status === "present") bucket.present++;
+  }
+  const called = trainings.called + matches.called;
+  const present = trainings.present + matches.present;
+  return { trainings, matches, rate: called ? Math.round((present / called) * 100) : 0 };
+}

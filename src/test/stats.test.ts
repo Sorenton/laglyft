@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computePlayerStats, attendanceRate } from "@/lib/stats";
+import { computePlayerStats, attendanceRate, attendanceSummary } from "@/lib/stats";
 
 describe("plus/minus", () => {
   it("gives +1 to everyone on court when we score", () => {
@@ -24,5 +24,24 @@ describe("attendance", () => {
 describe("attendanceRate not_called", () => {
   it("ignores Ej kallad", () => {
     expect(attendanceRate(["present", "absent", "not_called", "not_called"])).toBe(50);
+  });
+});
+
+describe("attendanceSummary", () => {
+  const s = attendanceSummary([
+    { kind: "training", status: "present" },
+    { kind: "training", status: "absent" },
+    { kind: "training", status: "not_called" },
+    { kind: "match", status: "present" },
+    { kind: "match", status: "not_called" },
+  ]);
+  it("counts trainings present/called, excluding Ej kallad", () => {
+    expect(s.trainings).toEqual({ present: 1, called: 2 });
+  });
+  it("counts matches present/called, excluding Ej kallad", () => {
+    expect(s.matches).toEqual({ present: 1, called: 1 });
+  });
+  it("rate only over called events", () => {
+    expect(s.rate).toBe(67);
   });
 });
