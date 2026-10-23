@@ -174,7 +174,7 @@ export function MatchCoach({ eventId, roster, stats, onChange }: { eventId: stri
   return (
     <section>
       <h3 className="text-3xl">Matchcoach</h3>
-      <p className="text-sm text-muted-foreground">Tryck + under matchen. Skott i täck räknas även som skott.</p>
+      <p className="text-sm text-muted-foreground">Fyll i per spelare under matchen – sparas direkt.</p>
       <div className="mt-4 overflow-x-auto rounded-md border bg-card">
         <table className="w-full text-left text-sm">
           <thead className="border-b text-xs uppercase tracking-widest text-muted-foreground">
