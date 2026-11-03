@@ -72,3 +72,14 @@ export function attendanceSummary(entries: AttendanceEntry[]): AttendanceSummary
   const present = trainings.present + matches.present;
   return { trainings, matches, rate: called ? Math.round((present / called) * 100) : 0 };
 }
+
+/** How many of our on-court goal events (for or against) each teammate shared with the player. */
+export function teammateCounts(playerId: string, goals: GoalRow[]): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const g of goals) {
+    const court = new Set(g.on_court);
+    if (!court.has(playerId)) continue;
+    for (const id of court) if (id !== playerId) out[id] = (out[id] ?? 0) + 1;
+  }
+  return out;
+}
