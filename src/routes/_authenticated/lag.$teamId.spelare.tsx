@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -60,7 +60,7 @@ function Players() {
         {players.map((p) => (
           <div key={p.id} className="flex items-center gap-4 p-4">
             <span className="stat-num w-12 text-3xl text-muted-foreground">{p.number ?? "–"}</span>
-            <span className="flex-1 font-medium">{p.name}</span>
+            <Link to="/lag/$teamId/spelare/$playerId" params={{ teamId, playerId: p.id }} className="flex-1 font-medium hover:underline">{p.name}</Link>
             <span className="text-sm text-muted-foreground">{p.position}</span>
             <Button variant="ghost" size="sm" onClick={() => remove(p.id)}>Ta bort</Button>
           </div>
