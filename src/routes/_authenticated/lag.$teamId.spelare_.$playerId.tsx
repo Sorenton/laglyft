@@ -26,7 +26,7 @@ const PIE_COLORS: Record<string, string> = {
   injured: "var(--border)",
 };
 
-function Box({ l, v, sub }: { l: string; v: React.ReactNode; sub?: string }) {
+function Box({ l, v, sub }: { l: string; v: React.ReactNode; sub?: string | undefined }) {
   return (
     <div className="rounded-md border bg-card p-4">
       <div className="text-xs uppercase tracking-widest text-muted-foreground">{l}</div>
