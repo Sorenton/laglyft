@@ -45,3 +45,12 @@ describe("attendanceSummary", () => {
     expect(s.rate).toBe(67);
   });
 });
+
+import { teammateCounts } from "@/lib/stats";
+describe("teammateCounts", () => {
+  it("counts shared on-court goals, excluding the player", () => {
+    const g = (on: string[]) => ({ id: "x", for_us: true, scorer_id: null, assist_id: null, on_court: on });
+    const c = teammateCounts("a", [g(["a", "b"]), g(["a", "b", "c"]), g(["b", "c"])]);
+    expect(c).toEqual({ b: 2, c: 1 });
+  });
+});

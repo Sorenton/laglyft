@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { eventsQuery, playersQuery, teamGoalsQuery } from "@/lib/queries";
@@ -72,7 +72,7 @@ function Stats() {
           {rows.map((r) => (
             <tr key={r.p.id}>
               <td className="stat-num p-3 text-xl text-muted-foreground">{r.p.number ?? "–"}</td>
-              <td className="p-3 font-medium">{r.p.name}</td>
+              <td className="p-3 font-medium"><Link to="/lag/$teamId/spelare/$playerId" params={{ teamId, playerId: r.p.id }} className="hover:underline">{r.p.name}</Link></td>
               <td className="stat-num p-3 text-right text-xl">{r.goals}</td>
               <td className="stat-num p-3 text-right text-xl">{r.assists}</td>
               <td className="stat-num p-3 text-right text-2xl">{r.points}</td>

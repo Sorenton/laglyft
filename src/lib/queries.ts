@@ -90,3 +90,18 @@ export const STATUS_LABEL: Record<string, string> = {
   injured: "Skadad",
   not_called: "Ej kallad",
 };
+
+export const teamEventGoalsQuery = (teamId: string) =>
+  queryOptions({
+    queryKey: ["teamEventGoals", teamId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("events")
+        .select("id, starts_at, opponent, title, kind, goals(id, for_us, scorer_id, assist_id, game_situation, goal_on_court(player_id)), match_lines(name, player_ids)")
+        .eq("team_id", teamId)
+        .eq("kind", "match")
+        .order("starts_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
